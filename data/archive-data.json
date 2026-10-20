@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "id": "cat-textiles",
+      "tag": "TEXTILES",
+      "titleHi": "भारत के धागे",
+      "titleEn": "Bharat ke Dhaage",
+      "desc": "An exploration of vibrant weaving and embroidery traditions, tying regional history into everyday fabrics.",
+      "icon": "loom",
+      "documents": [
+        {
+          "id": "doc-1792227533249",
+          "titleHi": "यह pdf बंधानी के विषय में बताती है",
+          "titleEn": "This pdf tells us about bandhaani textile.",
+          "author": "Kriti Gaur",
+          "year": "NA",
+          "summary": "You can learn about bandhaani fabric from this pdf. Happy learning to the Reader !!!!",
+          "fileUrl": "/uploads/1792227533138-text_to_pdf_Imagetotext.pdf",
+          "fileName": "text_to_pdf_Imagetotext.pdf"
+        }
+      ]
+    }
+  ]
+}

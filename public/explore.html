@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>अन्वेषण (Explore) | भारत Heritage Archive</title>
+  <link rel="stylesheet" href="/css/heritage.css">
+  <style>
+    .explore-container {
+      max-width: 1300px;
+      margin: 2rem auto 5rem;
+      padding: 0 1.5rem;
+    }
+    .section-intro {
+      text-align: center;
+      max-width: 750px;
+      margin: 0 auto 3rem;
+    }
+    .tab-pills {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-bottom: 2.5rem;
+    }
+    .tab-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-aged);
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-maroon);
+      transition: all 0.2s;
+    }
+    .tab-pill.active, .tab-pill:hover {
+      background: var(--text-maroon);
+      color: var(--gold-light);
+      border-color: var(--gold-accent);
+    }
+    .doc-item {
+      background: var(--bg-parchment-light);
+      border: 1px solid var(--border-aged);
+      padding: 1.2rem;
+      margin-bottom: 1.2rem;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="heritage-header">
+    <div class="nav-container">
+      <a href="/index.html" class="archive-brand">
+        <div class="brand-seal">भा</div>
+        <div class="brand-title">भारत</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/index.html"><span class="hi">मुखपृष्ठ</span><span class="en">Home</span></a></li>
+        <li><a href="/explore.html"><span class="hi">अन्वेषण</span><span class="en">Explore</span></a></li>
+        <li><a href="/resources.html"><span class="hi">ग्रंथागार</span><span class="en">Resources</span></a></li>
+        <li><a href="/admin.html" class="curator-btn"><span class="hi">व्यवस्थापक</span><span class="en">Curator</span></a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="explore-container">
+    <div class="section-intro">
+      <h1 style="font-size: 2.8rem; margin-bottom: 0.5rem;">अन्वेषण (Explore)</h1>
+      <p style="color: #6d432e; font-style: italic;">
+        "Dive into detailed essays on culture, textiles, art, and historical narratives categorized for history scholars."
+      </p>
+    </div>
+
+    <!-- Dynamic Category Filter Bar (Filled by JS) -->
+    <div class="tab-pills" id="tabPillsContainer"></div>
+
+    <!-- Category Detail & Documents List -->
+    <div id="categoryDetailView" class="manuscript-card">
+      <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div>
+      <div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+
+      <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--border-aged); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <span id="catTag" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--gold-accent); font-weight: bold;"></span>
+          <h2 id="catTitleHi" style="font-size: 2rem;"></h2>
+          <h4 id="catTitleEn" style="font-family: 'Cinzel', serif; color: #72402b;"></h4>
+        </div>
+        <p id="catCount" style="font-size: 0.85rem; font-style: italic;"></p>
+      </div>
+
+      <p id="catDesc" style="margin-bottom: 2rem; font-size: 1.05rem;"></p>
+
+      <h3 style="margin-bottom: 1rem; font-size: 1.3rem;">उपलब्ध ऐतिहासिक दस्तावेज एवं शोध पत्र (Available PDFs):</h3>
+      <div id="documentsList"></div>
+    </div>
+  </main>
+
+  <script>
+    let allCategories = [];
+    let selectedCatId = null;
+
+    async function initExplore() {
+      const res = await fetch('/api/categories');
+      allCategories = await res.json();
+      
+      if (!allCategories.length) return;
+      selectedCatId = allCategories[0].id;
+      renderTabs();
+      renderSelectedCategory();
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('tabPillsContainer');
+      container.innerHTML = allCategories.map(cat => `
+        <button class="tab-pill ${cat.id === selectedCatId ? 'active' : ''}" onclick="selectTab('${cat.id}')">
+          ${cat.titleHi} (${cat.tag})
+        </button>
+      `).join('');
+    }
+
+    function selectTab(id) {
+      selectedCatId = id;
+      renderTabs();
+      renderSelectedCategory();
+    }
+
+    function renderSelectedCategory() {
+      const cat = allCategories.find(c => c.id === selectedCatId);
+      if (!cat) return;
+
+      document.getElementById('catTag').innerText = cat.tag;
+      document.getElementById('catTitleHi').innerText = cat.titleHi;
+      document.getElementById('catTitleEn').innerText = cat.titleEn;
+      document.getElementById('catDesc').innerText = cat.desc;
+      document.getElementById('catCount').innerText = `${cat.documents ? cat.documents.length : 0} Documents Available`;
+
+      const docContainer = document.getElementById('documentsList');
+      if (!cat.documents || cat.documents.length === 0) {
+        docContainer.innerHTML = `
+          <div style="text-align: center; padding: 2.5rem; color: #875c44; font-style: italic;">
+            इस श्रेणी में अभी कोई दस्तावेज उपलब्ध नहीं है। व्यवस्थापक द्वारा शीघ्र अपलोड किया जाएगा।<br>
+            (No documents in this category yet. The curator will upload soon.)
+          </div>`;
+        return;
+      }
+
+      docContainer.innerHTML = cat.documents.map(doc => `
+        <div class="doc-item">
+          <div>
+            <h4 style="color: var(--text-maroon); font-size: 1.15rem; margin-bottom: 4px;">
+              ${doc.titleHi} <span style="font-size: 0.9rem; color: #72402b;">/ ${doc.titleEn}</span>
+            </h4>
+            <p style="font-size: 0.85rem; color: #5c3b28; margin-bottom: 6px;">${doc.summary}</p>
+            <div style="font-size: 0.75rem; color: #8e6245;">
+              <span><strong>लेखक (Author):</strong> ${doc.author || 'Archive'}</span> | 
+              <span><strong>काल (Era/Year):</strong> ${doc.year || 'N/A'}</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-shrink: 0;">
+            <a href="/document.html?cat=${cat.id}&doc=${doc.id}" class="btn-heritage">Read Online 📖</a>
+            <a href="${doc.fileUrl}" download="${doc.fileName || 'manuscript.pdf'}" class="btn-heritage btn-outline">Download 📥</a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.addEventListener('DOMContentLoaded', initExplore);
+  </script>
+</body>
+</html>

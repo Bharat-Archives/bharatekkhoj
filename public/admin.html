@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>व्यवस्थापक कक्ष (Curator Studio) | भारत Heritage Archive</title>
+  <link rel="stylesheet" href="/css/heritage.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 2rem auto 5rem;
+      padding: 0 1.5rem;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--border-aged);
+      padding-bottom: 1.2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .category-management-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-aged);
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      border-radius: 6px;
+      box-shadow: var(--shadow-manuscript);
+    }
+    .doc-row {
+      background: #fdfaf4;
+      border: 1px solid var(--border-aged);
+      padding: 12px 16px;
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 4px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .auth-card {
+      max-width: 460px;
+      margin: 5rem auto;
+      text-align: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-aged);
+      padding: 2.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-manuscript);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="heritage-header">
+    <div class="nav-container">
+      <a href="/index.html" class="archive-brand">
+        <div class="brand-seal">सं</div>
+        <div>
+          <div class="brand-title">भारत संग्रह</div>
+          <small style="color: #72422c; font-size: 0.75rem;">CURATOR STUDIO</small>
+        </div>
+      </a>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="/explore.html" class="btn-heritage btn-outline" target="_blank">View Live Archive ↗</a>
+        <button id="logoutBtn" class="btn-heritage btn-danger" style="display:none;" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-container">
+    
+    <!-- LOGIN VIEW -->
+    <section id="loginSection" class="auth-card">
+      <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div>
+      <div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+
+      <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--gold-accent);">☸</div>
+      <h2 style="margin-bottom: 0.5rem;">व्यवस्थापक प्रवेश</h2>
+      <h4 style="font-family: 'Cinzel', serif; color: #6d3f2b; margin-bottom: 1.5rem; font-size: 1rem;">Curator Portal Login</h4>
+      <p style="font-size: 0.9rem; margin-bottom: 1.8rem; color: #613e28; line-height: 1.6;">
+        Enter your administrative passcode to manage categories, create custom study tabs, and publish research PDFs.
+      </p>
+
+      <div class="form-group" style="text-align: left;">
+        <label for="adminPassword">प्रवेश कोड (Passcode)</label>
+        <input 
+          type="password" 
+          id="adminPassword" 
+          class="form-control" 
+          placeholder="Enter password (e.g. 1234 or abcd)" 
+          autocomplete="current-password"
+          onkeydown="if(event.key === 'Enter') handleLogin()"
+        >
+      </div>
+      <button 
+        type="button" 
+        id="loginSubmitBtn" 
+        class="btn-heritage" 
+        style="width: 100%; padding: 10px;" 
+        onclick="handleLogin()"
+      >
+        प्रवेश करें (Enter Portal)
+      </button>
+    </section>
+
+    <!-- WORKSPACE VIEW -->
+    <section id="workspaceSection" style="display: none;">
+      <div class="panel-header">
+        <div>
+          <h2 style="font-size: 2.2rem; color: var(--text-maroon);">अभिलेख नियंत्रण कक्ष (Archive Workspace)</h2>
+          <p style="color: #69412d; font-size: 0.95rem;">
+            Add new subject tabs, upload study materials, and manage your students' materials.
+          </p>
+        </div>
+        <button class="btn-heritage" onclick="openAddTabModal()">+ नया विषय / Tab जोड़ें (Add New Tab)</button>
+      </div>
+
+      <div id="categoriesList">
+        <div style="text-align:center; padding: 2rem; color: #7f553c;">दस्तावेज़ लोड हो रहे हैं (Loading archive)...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD TAB -->
+  <div id="addTabModal" class="modal-overlay" style="display: none;">
+    <div class="modal-parchment">
+      <h3 style="margin-bottom: 1rem; color: var(--text-maroon);">नया विषय / Tab बनाएँ (Add New Tab)</h3>
+      <form id="addTabForm" onsubmit="return false;">
+        <div class="form-group">
+          <label>विषय का नाम (Hindi Title)*</label>
+          <input type="text" id="tabTitleHi" class="form-control" placeholder="उदा. स्वतंत्रता संग्राम" required>
+        </div>
+        <div class="form-group">
+          <label>English Subtitle / Title*</label>
+          <input type="text" id="tabTitleEn" class="form-control" placeholder="e.g. Freedom Struggle" required>
+        </div>
+        <div class="form-group">
+          <label>Category Tag (English uppercase label)*</label>
+          <input type="text" id="tabTag" class="form-control" placeholder="e.g. MODERN HISTORY" required>
+        </div>
+        <div class="form-group">
+          <label>संक्षिप्त विवरण (Short Description for Students)</label>
+          <textarea id="tabDesc" class="form-control" rows="3" placeholder="Explain what students will find in this tab..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-heritage btn-outline" onclick="closeModals()">रद्द करें (Cancel)</button>
+          <button type="button" class="btn-heritage" onclick="submitNewTab()">Tab बनाएँ (Create Tab)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: UPLOAD / EDIT PDF -->
+  <div id="uploadPdfModal" class="modal-overlay" style="display: none;">
+    <div class="modal-parchment">
+      <h3 id="uploadModalTitle" style="margin-bottom: 1rem; color: var(--text-maroon);">दस्तावेज़ जोड़ें (Upload PDF)</h3>
+      <form id="uploadDocForm" onsubmit="return false;">
+        <input type="hidden" id="uploadCatId">
+        <input type="hidden" id="editDocId">
+
+        <div class="form-group">
+          <label>दस्तावेज़ का शीर्षक (Hindi Title)*</label>
+          <input type="text" id="docTitleHi" class="form-control" placeholder="उदा. 1857 की क्रांति के साक्ष्य" required>
+        </div>
+        <div class="form-group">
+          <label>English Title*</label>
+          <input type="text" id="docTitleEn" class="form-control" placeholder="e.g. Records of 1857 Uprising" required>
+        </div>
+        <div class="form-group">
+          <label>लेखक / शोधकर्ता (Author / Scholar)</label>
+          <input type="text" id="docAuthor" class="form-control" placeholder="e.g. Dr. K. P. Jayaswal">
+        </div>
+        <div class="form-group">
+          <label>काल / वर्ष (Era or Year)</label>
+          <input type="text" id="docYear" class="form-control" placeholder="e.g. 1928 / Colonial Era">
+        </div>
+        <div class="form-group">
+          <label>दस्तावेज़ का सार (Brief Summary for Students)</label>
+          <textarea id="docSummary" class="form-control" rows="3" placeholder="Overview of the manuscript contents..."></textarea>
+        </div>
+        <div class="form-group">
+          <label id="fileInputLabel">PDF फ़ाइल चुनें (Select PDF Document)*</label>
+          <input type="file" id="docFile" class="form-control" accept="application/pdf">
+          <small id="fileHelpText" style="color: #69412d; font-size: 0.8rem;">Maximum file size: 35 MB</small>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-heritage btn-outline" onclick="closeModals()">रद्द करें (Cancel)</button>
+          <button type="button" class="btn-heritage" id="uploadSubmitBtn" onclick="submitDocument()">Upload Document</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    var currentCategories = [];
+
+    function getAdminToken() {
+      return sessionStorage.getItem('adminToken') || '';
+    }
+
+    function getAuthHeaders(isFormData) {
+      var headers = {
+        'x-admin-token': getAdminToken()
+      };
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+      return headers;
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      var token = getAdminToken();
+      if (token) {
+        fetch('/api/admin/status', {
+          headers: getAuthHeaders(false)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data && data.loggedIn) {
+            showWorkspace();
+          } else {
+            showLogin();
+          }
+        })
+        .catch(function() {
+          showLogin();
+        });
+      } else {
+        showLogin();
+      }
+    });
+
+    function showLogin() {
+      var loginSec = document.getElementById('loginSection');
+      var workSec = document.getElementById('workspaceSection');
+      if (loginSec) loginSec.style.display = 'block';
+      if (workSec) workSec.style.display = 'none';
+    }
+
+    function showWorkspace() {
+      var loginSec = document.getElementById('loginSection');
+      var workSec = document.getElementById('workspaceSection');
+      var logoutBtn = document.getElementById('logoutBtn');
+
+      if (loginSec) loginSec.style.display = 'none';
+      if (workSec) workSec.style.display = 'block';
+      if (logoutBtn) logoutBtn.style.display = 'inline-block';
+      fetchAdminData();
+    }
+
+    function handleLogin() {
+      var passInput = document.getElementById('adminPassword');
+      var submitBtn = document.getElementById('loginSubmitBtn');
+      var password = passInput ? passInput.value.trim() : '';
+
+      if (!password) {
+        alert('कृपया पासवर्ड दर्ज करें (Please enter the passcode).');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.setAttribute('disabled', 'true');
+        submitBtn.innerText = 'सत्यापित हो रहा है (Checking)...';
+      }
+
+      fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: password })
+      })
+      .then(function(res) {
+        return res.json().then(function(data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function(result) {
+        if (result.ok && result.data && result.data.token) {
+          sessionStorage.setItem('adminToken', result.data.token);
+          showWorkspace();
+        } else {
+          alert((result.data && result.data.error) ? result.data.error : 'प्रवेश अस्वीकृत: गलत पासवर्ड (Incorrect Passcode)');
+        }
+      })
+      .catch(function(err) {
+        alert('सर्वर से संपर्क नहीं हो पाया: ' + err.message);
+      })
+      .finally(function() {
+        if (submitBtn) {
+          submitBtn.removeAttribute('disabled');
+          submitBtn.innerText = 'प्रवेश करें (Enter Portal)';
+        }
+      });
+    }
+
+    function logout() {
+      sessionStorage.removeItem('adminToken');
+      window.location.reload();
+    }
+
+    function fetchAdminData() {
+      fetch('/api/categories')
+        .then(function(res) {
+          if (!res.ok) throw new Error('Could not load categories');
+          return res.json();
+        })
+        .then(function(data) {
+          currentCategories = data || [];
+          renderAdminCategories();
+        })
+        .catch(function(err) {
+          console.error('Fetch error:', err);
+        });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderAdminCategories() {
+      var container = document.getElementById('categoriesList');
+      if (!container) return;
+
+      if (!currentCategories || !currentCategories.length) {
+        container.innerHTML = '<div style="text-align: center; padding: 3rem; background: var(--bg-card); border: 1px dashed var(--border-aged); border-radius: 6px;">' +
+          '<p style="font-size: 1.15rem; color: var(--text-maroon); font-weight: bold;">कोई विषय नहीं मिला (No tabs created yet)</p>' +
+          '<p style="color: #6d432e; margin-top: 6px;">ऊपर दिए गए "+ नया विषय / Tab जोड़ें" बटन पर क्लिक करके अपना पहला विषय बनाएं।</p>' +
+          '</div>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < currentCategories.length; i++) {
+        var cat = currentCategories[i];
+        var docList = cat.documents || [];
+
+        html += '<div class="category-management-box">';
+        html += '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">';
+        html += '<div>';
+        html += '<span style="font-size: 0.75rem; background: var(--text-maroon); color: var(--gold-light); padding: 3px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 0.5px;">' + escapeHtml(cat.tag) + '</span>';
+        html += '<h3 style="margin-top: 8px; color: var(--text-maroon); font-size: 1.6rem;">' + escapeHtml(cat.titleHi) + ' <span style="font-size: 1.1rem; color: #72422c;">(' + escapeHtml(cat.titleEn) + ')</span></h3>';
+        html += '<p style="font-size: 0.9rem; color: #57331e; max-width: 700px; margin-top: 4px;">' + escapeHtml(cat.desc) + '</p>';
+        html += '</div>';
+        html += '<div style="display: flex; gap: 10px;">';
+        html += '<button class="btn-heritage" onclick="openUploadModal(\'' + cat.id + '\')">+ Add PDF to Tab</button>';
+        html += '<button class="btn-heritage btn-danger" onclick="deleteCategoryByIndex(' + i + ')">Delete Tab 🗑️</button>';
+        html += '</div>';
+        html += '</div>';
+
+        html += '<div style="border-top: 1px dashed var(--border-aged); padding-top: 1rem;">';
+        html += '<h5 style="color: var(--text-maroon); margin-bottom: 0.8rem; font-size: 1rem;">उपलब्ध अध्ययन सामग्री / Documents in this Tab (' + docList.length + '):</h5>';
+
+        if (docList.length === 0) {
+          html += '<p style="font-style: italic; font-size: 0.85rem; color: #875d45;">इस विषय में अभी कोई PDF नहीं है। "+ Add PDF to Tab" पर क्लिक करके सामग्री जोड़ें।</p>';
+        } else {
+          for (var j = 0; j < docList.length; j++) {
+            var doc = docList[j];
+            html += '<div class="doc-row">';
+            html += '<div style="max-width: 65%;">';
+            html += '<strong style="color: var(--text-maroon); font-size: 1.05rem;">' + escapeHtml(doc.titleHi) + '</strong> ';
+            html += '<span style="color: #7a5038;">/ ' + escapeHtml(doc.titleEn) + '</span><br>';
+            html += '<small style="color: #8c5b3d;">फ़ाइल: ' + escapeHtml(doc.fileName || 'document.pdf') + ' | लेखक: ' + escapeHtml(doc.author || 'Archive') + ' | काल/वर्ष: ' + escapeHtml(doc.year || 'N/A') + '</small>';
+            html += '</div>';
+            html += '<div style="display: flex; gap: 8px; align-items: center; flex-shrink: 0;">';
+            html += '<a href="' + doc.fileUrl + '" target="_blank" rel="noopener noreferrer" class="btn-heritage btn-outline" style="padding: 5px 12px; font-size: 0.8rem;">View</a>';
+            html += '<button class="btn-heritage btn-outline" style="padding: 5px 12px; font-size: 0.8rem;" onclick="openEditModal(\'' + cat.id + '\', \'' + doc.id + '\')">Edit ✏️</button>';
+            html += '<button class="btn-heritage btn-danger" style="padding: 5px 12px; font-size: 0.8rem;" onclick="deleteDocument(\'' + cat.id + '\', \'' + doc.id + '\')">Delete ✕</button>';
+            html += '</div>';
+            html += '</div>';
+          }
+        }
+
+        html += '</div></div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function openAddTabModal() {
+      var form = document.getElementById('addTabForm');
+      if (form) form.reset();
+      var modal = document.getElementById('addTabModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function submitNewTab() {
+      var titleHi = document.getElementById('tabTitleHi').value.trim();
+      var titleEn = document.getElementById('tabTitleEn').value.trim();
+      var tag = document.getElementById('tabTag').value.trim();
+      var desc = document.getElementById('tabDesc').value.trim();
+
+      if (!titleHi || !titleEn) {
+        alert('कृपया दोनों भाषाओं में नाम भरें (Please provide both Hindi and English titles).');
+        return;
+      }
+
+      fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: getAuthHeaders(false),
+        body: JSON.stringify({
+          titleHi: titleHi,
+          titleEn: titleEn,
+          tag: tag,
+          desc: desc
+        })
+      })
+      .then(function(res) {
+        return res.json().then(function(data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function(result) {
+        if (result.ok) {
+          closeModals();
+          fetchAdminData();
+        } else {
+          alert('त्रुटि: ' + ((result.data && result.data.error) ? result.data.error : 'Could not create tab.'));
+        }
+      })
+      .catch(function(err) {
+        alert('सर्वर से संपर्क नहीं हो सका: ' + err.message);
+      });
+    }
+
+    function deleteCategoryByIndex(idx) {
+      var cat = currentCategories[idx];
+      if (!cat) return;
+
+      if (!confirm('क्या आप सच में "' + cat.titleHi + '" टैब और इसके सभी दस्तावेज़ हटाना चाहते हैं?\n(Delete this tab and all its documents?)')) {
+        return;
+      }
+
+      fetch('/api/admin/categories/' + encodeURIComponent(cat.id), {
+        method: 'DELETE',
+        headers: getAuthHeaders(false)
+      })
+      .then(function(res) {
+        return res.json().then(function(data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function(result) {
+        if (result.ok) {
+          fetchAdminData();
+        } else {
+          alert((result.data && result.data.error) ? result.data.error : 'टैब हटाने में विफल');
+        }
+      })
+      .catch(function(err) {
+        alert('Connection error: ' + err.message);
+      });
+    }
+
+    function openUploadModal(catId) {
+      var form = document.getElementById('uploadDocForm');
+      if (form) form.reset();
+
+      document.getElementById('uploadCatId').value = catId;
+      document.getElementById('editDocId').value = '';
+      
+      var titleElem = document.getElementById('uploadModalTitle');
+      if (titleElem) titleElem.innerText = 'दस्तावेज़ जोड़ें (Upload PDF)';
+
+      var labelElem = document.getElementById('fileInputLabel');
+      if (labelElem) labelElem.innerText = 'PDF फ़ाइल चुनें (Select PDF Document)*';
+
+      var fileInput = document.getElementById('docFile');
+      if (fileInput) fileInput.required = true;
+
+      var modal = document.getElementById('uploadPdfModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function openEditModal(catId, docId) {
+      var cat = null;
+      for (var i = 0; i < currentCategories.length; i++) {
+        if (currentCategories[i].id === catId) { cat = currentCategories[i]; break; }
+      }
+      if (!cat) return;
+
+      var doc = null;
+      var docs = cat.documents || [];
+      for (var j = 0; j < docs.length; j++) {
+        if (docs[j].id === docId) { doc = docs[j]; break; }
+      }
+      if (!doc) return;
+
+      document.getElementById('uploadCatId').value = catId;
+      document.getElementById('editDocId').value = docId;
+      document.getElementById('docTitleHi').value = doc.titleHi || '';
+      document.getElementById('docTitleEn').value = doc.titleEn || '';
+      document.getElementById('docAuthor').value = doc.author || '';
+      document.getElementById('docYear').value = doc.year || '';
+      document.getElementById('docSummary').value = doc.summary || '';
+
+      var titleElem = document.getElementById('uploadModalTitle');
+      if (titleElem) titleElem.innerText = 'दस्तावेज़ संपादित करें (Edit Details / Replace PDF)';
+
+      var labelElem = document.getElementById('fileInputLabel');
+      if (labelElem) labelElem.innerText = 'नई PDF फ़ाइल चुनें (वैकल्पिक - यदि बदलना चाहते हैं)';
+
+      var fileInput = document.getElementById('docFile');
+      if (fileInput) fileInput.required = false;
+
+      var modal = document.getElementById('uploadPdfModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function submitDocument() {
+      var catId = document.getElementById('uploadCatId').value;
+      var docId = document.getElementById('editDocId').value;
+      var fileInput = document.getElementById('docFile');
+
+      var titleHi = document.getElementById('docTitleHi').value.trim();
+      var titleEn = document.getElementById('docTitleEn').value.trim();
+
+      if (!titleHi || !titleEn) {
+        alert('कृपया दस्तावेज़ का नाम हिंदी और अंग्रेज़ी दोनों में दें।');
+        return;
+      }
+
+      var formData = new FormData();
+      formData.append('titleHi', titleHi);
+      formData.append('titleEn', titleEn);
+      formData.append('author', document.getElementById('docAuthor').value.trim());
+      formData.append('year', document.getElementById('docYear').value.trim());
+      formData.append('summary', document.getElementById('docSummary').value.trim());
+
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append('pdfFile', fileInput.files[0]);
+      }
+
+      var url = '/api/admin/documents/' + encodeURIComponent(catId);
+      var method = 'POST';
+
+      if (docId) {
+        url = '/api/admin/documents/' + encodeURIComponent(catId) + '/' + encodeURIComponent(docId);
+        method = 'PUT';
+      }
+
+      var submitBtn = document.getElementById('uploadSubmitBtn');
+      if (submitBtn) {
+        submitBtn.setAttribute('disabled', 'true');
+        submitBtn.innerText = 'सहेजा जा रहा है (Saving)...';
+      }
+
+      fetch(url, {
+        method: method,
+        headers: getAuthHeaders(true),
+        body: formData
+      })
+      .then(function(res) {
+        return res.json().then(function(data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function(result) {
+        if (result.ok) {
+          closeModals();
+          fetchAdminData();
+        } else {
+          alert('दस्तावेज़ सहेजने में विफल: ' + ((result.data && result.data.error) ? result.data.error : 'Check file size.'));
+        }
+      })
+      .catch(function(err) {
+        alert('Connection error: ' + err.message);
+      })
+      .finally(function() {
+        if (submitBtn) {
+          submitBtn.removeAttribute('disabled');
+          submitBtn.innerText = 'Upload Document';
+        }
+      });
+    }
+
+    function deleteDocument(catId, docId) {
+      if (!confirm('क्या आप सच में इस ऐतिहासिक दस्तावेज़ को हटाना चाहते हैं?\n(Delete this document?)')) {
+        return;
+      }
+
+      fetch('/api/admin/documents/' + encodeURIComponent(catId) + '/' + encodeURIComponent(docId), {
+        method: 'DELETE',
+        headers: getAuthHeaders(false)
+      })
+      .then(function(res) {
+        return res.json().then(function(data) {
+          return { ok: res.ok, data: data };
+        });
+      })
+      .then(function(result) {
+        if (result.ok) {
+          fetchAdminData();
+        } else {
+          alert((result.data && result.data.error) ? result.data.error : 'Could not delete document.');
+        }
+      })
+      .catch(function(err) {
+        alert('Connection error: ' + err.message);
+      });
+    }
+
+    function closeModals() {
+      var addModal = document.getElementById('addTabModal');
+      var uploadModal = document.getElementById('uploadPdfModal');
+      if (addModal) addModal.style.display = 'none';
+      if (uploadModal) uploadModal.style.display = 'none';
+    }
+
+    window.addEventListener('click', function(e) {
+      var addModal = document.getElementById('addTabModal');
+      var uploadModal = document.getElementById('uploadPdfModal');
+      if (e.target === addModal) addModal.style.display = 'none';
+      if (e.target === uploadModal) uploadModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

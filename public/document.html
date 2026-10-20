@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <title>दस्तावेज़ वाचन (Manuscript Reader) | भारत Archive</title>
+  <link rel="stylesheet" href="/css/heritage.css">
+  <style>
+    .viewer-layout {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+    .pdf-frame {
+      width: 100%;
+      height: 80vh;
+      border: 2px solid var(--border-aged);
+      background: #4A3525;
+      border-radius: 4px;
+    }
+    .doc-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-aged);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="heritage-header">
+    <div class="nav-container">
+      <a href="/index.html" class="archive-brand">
+        <div class="brand-seal">भा</div>
+        <div class="brand-title">भारत</div>
+      </a>
+      <a href="/explore.html" class="btn-heritage btn-outline">← Back to Archive</a>
+    </div>
+  </header>
+
+  <main class="viewer-layout">
+    <div class="doc-header" id="docHeader">
+      <div>
+        <h2 id="docTitle" style="color: var(--text-maroon);">लोड हो रहा है...</h2>
+        <p id="docMeta" style="font-size: 0.9rem; color: #69412d;"></p>
+      </div>
+      <div>
+        <a id="downloadBtn" href="#" download class="btn-heritage">Download Manuscript (PDF)</a>
+      </div>
+    </div>
+
+    <!-- PDF Viewer Frame -->
+    <iframe id="pdfFrame" class="pdf-frame" src=""></iframe>
+  </main>
+
+  <script>
+    async function loadDocument() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catId = urlParams.get('cat');
+      const docId = urlParams.get('doc');
+
+      if (!catId || !docId) {
+        alert("Invalid Document reference");
+        window.location.href = '/explore.html';
+        return;
+      }
+
+      const res = await fetch(`/api/document/${catId}/${docId}`);
+      if (!res.ok) {
+        alert("Document not found");
+        return;
+      }
+      const data = await res.json();
+      const doc = data.document;
+
+      document.getElementById('docTitle').innerText = `${doc.titleHi} (${doc.titleEn})`;
+      document.getElementById('docMeta').innerText = `Author: ${doc.author} | Year/Era: ${doc.year} | Category: ${data.category.titleEn}`;
+      
+      const frame = document.getElementById('pdfFrame');
+      frame.src = doc.fileUrl;
+
+      const dl = document.getElementById('downloadBtn');
+      dl.href = doc.fileUrl;
+      dl.setAttribute('download', doc.fileName || 'historical-document.pdf');
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDocument);
+  </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>भारत | एक स्रोत, कई धाराएँ - Heritage Archive</title>
+  <link rel="stylesheet" href="/css/heritage.css">
+  <style>
+    .hero-section {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      padding: 3rem 2rem;
+      max-width: 1300px;
+      margin: 0 auto;
+      gap: 3rem;
+    }
+    .hero-chakra-watermark {
+      position: absolute;
+      right: 5%;
+      top: 15%;
+      width: 480px;
+      opacity: 0.05;
+      pointer-events: none;
+      animation: rotateChakra 120s linear infinite;
+    }
+    @keyframes rotateChakra {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hero-content {
+      flex: 1.2;
+      z-index: 2;
+    }
+    .hero-map {
+      flex: 0.8;
+      background: var(--bg-card);
+      border: 2px solid var(--border-aged);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-manuscript);
+      text-align: center;
+    }
+    .hero-map img {
+      max-width: 100%;
+      height: auto;
+      filter: sepia(30%) contrast(105%);
+      border: 1px solid var(--border-aged);
+    }
+    .chakra-badge {
+      display: inline-block;
+      color: var(--gold-accent);
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero-title {
+      font-size: 4.5rem;
+      line-height: 1.1;
+      margin-bottom: 0.8rem;
+    }
+    .hero-subtitle {
+      font-size: 1.6rem;
+      color: #7a3528;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-subtitle::before, .hero-subtitle::after {
+      content: "";
+      height: 2px;
+      background: var(--gold-accent);
+      flex: 1;
+    }
+    .quote-box {
+      border-left: 3px solid var(--gold-accent);
+      padding-left: 1rem;
+      font-style: italic;
+      margin: 1.5rem 0 2rem;
+      color: #5c3928;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <header class="heritage-header">
+    <div class="nav-container">
+      <a href="/index.html" class="archive-brand">
+        <div class="brand-seal">भा</div>
+        <div>
+          <div class="brand-title">भारत</div>
+          <small style="color: #8c5b3e; font-size: 0.75rem;">ARCHIVE & RESEARCH</small>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/index.html"><span class="hi">मुखपृष्ठ</span><span class="en">Home</span></a></li>
+        <li><a href="/explore.html"><span class="hi">अन्वेषण</span><span class="en">Explore</span></a></li>
+        <li><a href="/resources.html"><span class="hi">ग्रंथागार</span><span class="en">Resources</span></a></li>
+        <li><a href="/explore.html#our-story"><span class="hi">हमारी कहानी</span><span class="en">Our Story</span></a></li>
+        <li><a href="/admin.html" class="curator-btn"><span class="hi">व्यवस्थापक</span><span class="en">Curator Portal</span></a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Content -->
+  <main class="hero-section">
+    <!-- Ashoka Chakra Watermark -->
+    <svg class="hero-chakra-watermark" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="50" cy="50" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Spokes omitted for brevity; represented smoothly -->
+      <g stroke="currentColor" stroke-width="1.2">
+        <line x1="50" y1="5" x2="50" y2="95" /><line x1="5" y1="50" x2="95" y2="50" />
+        <line x1="18" y1="18" x2="82" y2="82" /><line x1="18" y1="82" x2="82" y2="18" />
+      </g>
+    </svg>
+
+    <div class="hero-content">
+      <span class="chakra-badge">☸</span>
+      <h1 class="hero-title">भारत</h1>
+      <div class="hero-subtitle subheading-font">एक स्रोत, कई धाराएँ</div>
+      <p class="quote-box">
+        "India is about inclusivity, diversity, and acceptance. An open archival repository prepared for history students, scholars, and curious minds to explore historical accounts, monographs, and manuscripts."
+      </p>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <a href="/explore.html" class="btn-heritage">अन्वेषण आरंभ करें (Start Exploring) →</a>
+        <a href="/resources.html" class="btn-heritage btn-outline">ग्रंथागार (Library)</a>
+      </div>
+    </div>
+
+    <div class="hero-map">
+      <div class="corner-ornament tl"></div><div class="corner-ornament tr"></div>
+      <div class="corner-ornament bl"></div><div class="corner-ornament br"></div>
+      <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=700&q=80" alt="Historical Heritage of India">
+      <p style="font-size: 0.85rem; margin-top: 0.8rem; font-style: italic; color: #69432d;">
+        ऐतिहासिक धरोहर एवं पांडुलिपि संग्रह (Heritage Archive)
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/public.js"></script>
+</body>
+</html>

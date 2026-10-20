@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ग्रंथागार (Resources) | भारत Heritage Archive</title>
+  <link rel="stylesheet" href="/css/heritage.css">
+  <style>
+    .resources-container {
+      max-width: 1200px;
+      margin: 2.5rem auto 5rem;
+      padding: 0 1.5rem;
+    }
+    .search-box {
+      margin-bottom: 2.5rem;
+      display: flex;
+      gap: 1rem;
+    }
+    .resource-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-aged);
+      padding: 1.5rem;
+      border-radius: 4px;
+      box-shadow: var(--shadow-manuscript);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="heritage-header">
+    <div class="nav-container">
+      <a href="/index.html" class="archive-brand">
+        <div class="brand-seal">भा</div>
+        <div class="brand-title">भारत</div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/index.html"><span class="hi">मुखपृष्ठ</span><span class="en">Home</span></a></li>
+        <li><a href="/explore.html"><span class="hi">अन्वेषण</span><span class="en">Explore</span></a></li>
+        <li><a href="/resources.html"><span class="hi">ग्रंथागार</span><span class="en">Resources</span></a></li>
+        <li><a href="/admin.html" class="curator-btn"><span class="hi">व्यवस्थापक</span><span class="en">Curator</span></a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="resources-container">
+    <div style="text-align: center; margin-bottom: 3rem;">
+      <h1 style="font-size: 2.6rem; margin-bottom: 0.5rem;">ग्रंथागार (Resources & Library)</h1>
+      <p style="color: #6d432e; font-style: italic;">
+        Digital library, historical reading lists, primary gazetteers, and academic research aids for students.
+      </p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" class="form-control" placeholder="दस्तावेज़ या विषय खोजें (Search documents, topics, or authors)..." onkeyup="filterDocs()">
+    </div>
+
+    <div class="grid-cards" id="resourcesGrid">
+      <!-- Populated dynamically from API -->
+    </div>
+  </main>
+
+  <script>
+    let allCategories = [];
+
+    async function loadResources() {
+      const res = await fetch('/api/categories');
+      allCategories = await res.json();
+      renderAllDocuments();
+    }
+
+    function renderAllDocuments(filter = '') {
+      const container = document.getElementById('resourcesGrid');
+      let html = '';
+
+      allCategories.forEach(cat => {
+        (cat.documents || []).forEach(doc => {
+          const match = !filter || 
+            doc.titleHi.toLowerCase().includes(filter) || 
+            doc.titleEn.toLowerCase().includes(filter) || 
+            (doc.author && doc.author.toLowerCase().includes(filter)) ||
+            (doc.summary && doc.summary.toLowerCase().includes(filter));
+
+          if (match) {
+            html += `
+              <div class="resource-card">
+                <span style="font-size: 0.7rem; color: var(--gold-accent); font-weight: bold; letter-spacing: 1px;">
+                  ${cat.tag}
+                </span>
+                <h3 style="margin: 0.4rem 0; font-size: 1.25rem;">${doc.titleHi}</h3>
+                <h5 style="color: #6f422d; margin-bottom: 0.8rem; font-family: 'Cinzel', serif;">${doc.titleEn}</h5>
+                <p style="font-size: 0.85rem; color: #53321f; margin-bottom: 1.2rem;">${doc.summary}</p>
+                <div style="font-size: 0.75rem; color: #8c5b3d; margin-bottom: 1rem;">
+                  <strong>Author:</strong> ${doc.author || 'Archive'} | <strong>Era:</strong> ${doc.year || 'N/A'}
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <a href="/document.html?cat=${cat.id}&doc=${doc.id}" class="btn-heritage">Read Online 📖</a>
+                  <a href="${doc.fileUrl}" download="${doc.fileName || 'manuscript.pdf'}" class="btn-heritage btn-outline">Download 📥</a>
+                </div>
+              </div>
+            `;
+          }
+        });
+      });
+
+      container.innerHTML = html || '<p style="text-align: center; grid-column: 1/-1; color: #6d432e; font-style: italic;">कोई दस्तावेज नहीं मिला (No matching documents found).</p>';
+    }
+
+    function filterDocs() {
+      const val = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderAllDocuments(val);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadResources);
+  </script>
+</body>
+</html>
